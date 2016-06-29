@@ -11,8 +11,11 @@ namespace EquationParse.EquationEngine
 		private string _rawEquation;
 		private double _startVal;
 		private double _endVal;
-		private ArrayList x = new ArrayList();
-		private ArrayList y = new ArrayList();
+		private ArrayList _x = new ArrayList();
+		private ArrayList _y = new ArrayList();
+		private const int STEP_DEFAULT = 1;
+		private const int START_DEFAULT = -10;
+		private const int END_DEFAULT = 10;
 
 		// Constructors
 
@@ -23,28 +26,19 @@ namespace EquationParse.EquationEngine
 			parseEquation(equ);
 		}
 
-		public double startVal
-		{
-			get { return _startVal; }
-		}
-
-		public double endVal
-		{
-			get { return _endVal; }
-		}
-
-		public string rawEquation
-		{
-			get { return _rawEquation; }
-			set { _rawEquation = rawEquation; }
-		}
+		// Property mutators and acessors 
+		public double startVal { get { return _startVal; } }
+		public double endVal { get { return _endVal; } }
+		public string rawEquation {	get { return _rawEquation; } set { _rawEquation = rawEquation; } }
+		public ArrayList x { get { return _x; } set { _x = x; } } 
+		public ArrayList y { get { return _y; } }
 
 		//public ArrayList equation
 		//{
 		//	get { return _equation; }
 		//}
 
-		public void parseEquation(string rawEquation)
+		private void parseEquation(string rawEquation)
 		{
 			_rawEquation = rawEquation;
 			char[] eq = rawEquation.ToCharArray();
@@ -55,6 +49,7 @@ namespace EquationParse.EquationEngine
 				{
 					_equation.Add(getOperator(eq[i]));
 				}
+				// if variable x (and in the future y)
 				else if (eq[i] == 'x')
 				{
 					Variable v = new Variable();
@@ -63,9 +58,12 @@ namespace EquationParse.EquationEngine
 				}
 				// Skip white spaces
 				else if (eq[i] == ' ') { continue; }
+				// If is number
 				else
 				{
-					_equation.Add(eq[i]);
+					Constant c = new Constant();
+					c.val = double.Parse(Convert.ToString(eq[i]));
+					_equation.Add(c);
 				}
 			}
 		}
@@ -79,8 +77,13 @@ namespace EquationParse.EquationEngine
 			ArrayList xList = getRange(start, stop, step);
 			ArrayList yList = new ArrayList();
 
+			// For each element in the x list, run it through the equation
 			for(int k = 0; k < xList.Count; k++)
 			{
+				double yElement = 0;
+				//if (xList[k].GetType() == typeof(Constant))
+				//{
+				//}
 
 			}
 		}
@@ -154,9 +157,16 @@ namespace EquationParse.EquationEngine
 			for(int i = 0; i < _equation.Count; i++)
 			{
 				if(isOperator(char.Parse(_equation[i].ToString())))
+				{
+					//Console.WriteLine(_equation[i]);
 					str.Append(" " + _equation[i].ToString() + " ");
+				}
 				else
+				{
+					//Console.WriteLine(_equation[i]);
 					str.Append(_equation[i].ToString());
+				}
+					
 			}
 
 			return str.ToString();
