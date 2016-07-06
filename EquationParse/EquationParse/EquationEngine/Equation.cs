@@ -41,30 +41,69 @@ namespace EquationParse.EquationEngine
 		private void parseEquation(string rawEquation)
 		{
 			_rawEquation = rawEquation;
+			//string[] equArray = rawEquation.Split('+');
 			char[] eq = rawEquation.ToCharArray();
-			// Parsing code here...
+			// Break the equation into chunks
+			// A chunk is defined by an operator of the symbols between operators
 			for (int i = 0; i < eq.Length; i++)
 			{
+				// Operators are the seperators of chunks. They are also stored as chunks to the equation.
 				if (isOperator(eq[i]))
 				{
 					_equation.Add(getOperator(eq[i]));
 				}
-				// if variable x (and in the future y)
-				else if (eq[i] == 'x')
-				{
-					Variable v = new Variable();
-					v.symbol = eq[i];
-					_equation.Add(v);
-				}
-				// Skip white spaces
-				else if (eq[i] == ' ') { continue; }
-				// If is number
 				else
 				{
-					Constant c = new Constant();
-					c.val = double.Parse(Convert.ToString(eq[i]));
-					_equation.Add(c);
+					string thisChunk = "";
+					int j = i;
+					// Get the chunk
+					while (!isOperator(eq[j]))
+					{
+						thisChunk += eq[j].ToString();
+					}
+					// Test to see if the chunk is a number (constant) or a variable
+					double num;
+					char var = isVariable(thisChunk.Trim());
+					if (var != 'N')
+					{
+						Variable v = new Variable();
+						v.symbol = var;
+						_equation.Add(v);
+					}
+					else if (double.TryParse(thisChunk.Trim(), out num))
+					{
+						Constant c = new Constant();
+						c.val = num;
+					}
+					else
+					{
+						Console.WriteLine("Invalid symbol detected: " + thisChunk);
+						throw new ArgumentException();
+					}
+					i = j;
+					
 				}
+
+				//if (isOperator(eq[i]))
+				//{
+				//	_equation.Add(getOperator(eq[i]));
+				//}
+				//// if variable x (and in the future y)
+				//else if (eq[i] == 'x')
+				//{
+				//	Variable v = new Variable();
+				//	v.symbol = eq[i];
+				//	_equation.Add(v);
+				//}
+				//// Skip white spaces
+				//else if (eq[i] == ' ') { continue; }
+				//// If is number
+				//else
+				//{
+				//	Constant c = new Constant();
+				//	c.val = double.Parse(Convert.ToString(eq[i]));
+				//	_equation.Add(c);
+				//}
 			}
 		}
 
@@ -101,6 +140,22 @@ namespace EquationParse.EquationEngine
 			}
 
 			return x;
+		}
+		
+		private char isVariable(string str)
+		{
+			if (str.ToLower() == "x")
+			{
+				return 'x';
+			}
+			else if (str.ToLower() == "y")
+			{
+				return 'y';
+			}
+			else
+			{
+				return 'N';
+			}
 		}
 
 		private bool isOperator(char sym)
