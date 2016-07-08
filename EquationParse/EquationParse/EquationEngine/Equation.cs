@@ -41,14 +41,16 @@ namespace EquationParse.EquationEngine
 		private void parseEquation(string rawEquation)
 		{
 			_rawEquation = rawEquation;
-			//string[] equArray = rawEquation.Split('+');
 			char[] eq = rawEquation.ToCharArray();
 			// Break the equation into chunks
 			// A chunk is defined by an operator of the symbols between operators
 			for (int i = 0; i < eq.Length; i++)
 			{
+				// Skip white spaces
+				if (eq[i].ToString() == " ") { }
+
 				// Operators are the seperators of chunks. They are also stored as chunks to the equation.
-				if (isOperator(eq[i]))
+				else if (isOperator(eq[i]))
 				{
 					_equation.Add(getOperator(eq[i]));
 				}
@@ -60,6 +62,14 @@ namespace EquationParse.EquationEngine
 					while (!isOperator(eq[j]))
 					{
 						thisChunk += eq[j].ToString();
+						int k = j + 1;
+						if (k >= eq.Length)
+						{
+							j = k;
+							break;
+						}
+						else
+							j++;
 					}
 					// Test to see if the chunk is a number (constant) or a variable
 					double num;
@@ -74,14 +84,17 @@ namespace EquationParse.EquationEngine
 					{
 						Constant c = new Constant();
 						c.val = num;
+						_equation.Add(c);
 					}
 					else
 					{
 						Console.WriteLine("Invalid symbol detected: " + thisChunk);
 						throw new ArgumentException();
 					}
-					i = j;
-					
+
+					//Increment by j - 1 one because the for loop automatically increments by one
+					i = j - 1;
+
 				}
 
 				//if (isOperator(eq[i]))

@@ -12,7 +12,7 @@ namespace EquationParse
 			string e = Console.ReadLine();
 
 			Equation eq = new Equation(e);
-			eq.solveEquation(0.0, 1.0, 1);
+			//eq.solveEquation(0.0, 1.0, 1);
 
 			Console.Write(eq.ToString());
 			Console.Read();
